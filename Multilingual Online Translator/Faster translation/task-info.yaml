@@ -1,0 +1,156 @@
+type: edu
+custom_name: stage6
+files:
+- name: translator/translator.py
+  visible: true
+  text: |
+    print('Hello, World!')
+  learner_created: false
+- name: tests.py
+  visible: false
+  text: |
+    from hstest.stage_test import StageTest
+    from hstest.test_case import TestCase
+    from hstest.check_result import CheckResult
+
+    import sys
+    if sys.platform.startswith("win"):
+        import _locale
+        # pylint: disable=protected-access
+        _locale._getdefaultlocale = (lambda *args: ['en_US', 'utf8'])
+
+    CheckResult.correct = lambda: CheckResult(True, '')
+    CheckResult.wrong = lambda feedback: CheckResult(False, feedback)
+
+
+    class TranslatorTest(StageTest):
+        def generate(self):
+            return [TestCase(args=['english', 'all', 'hello'])]
+
+        def check(self, reply, attach):
+            reply = reply.lower().strip()
+            if not ('arabic translation' in reply
+                    and 'arabic example' in reply
+                    and 'russian translation' in reply
+                    and 'russian example' in reply
+                    and 'german translation' in reply
+                    and 'spanish translation' in reply):
+                return CheckResult.wrong("Try to print translations and examples of all languages you can.")
+
+            if not ('bonjour' in reply and 'hallo' in reply and 'hola' in reply):
+                return CheckResult.wrong("Looks like you did not print translations for some of the languages for which you printed the titles\n"
+                                         "(titles such as \"... translations\", where ... is the name of the language)")
+
+            if 'french translations' not in reply and 'french examples' not in reply:
+                return CheckResult.wrong("Maybe there is a mistake in command line args or in output.\n\
+                     if args==['english', 'french', 'hello'], your output should contain \
+                     'french translations', 'french examples' and so on")
+
+            russian_examples_index = reply.index('russian example')
+            try:
+                end_of_re_index = reply[russian_examples_index:].index('translation') + russian_examples_index
+                ru_examples_slice = reply[russian_examples_index:end_of_re_index]
+                end_of_re_index = ru_examples_slice.rindex('\n') + russian_examples_index
+            except ValueError:
+                end_of_re_index = None
+
+            russian_examples_slice = reply[russian_examples_index:end_of_re_index].strip().split('\n')
+
+            if len(russian_examples_slice) < 3:
+                return CheckResult.wrong("Looks like you did not print examples for some of the languages for which you printed the titles\n"
+                                         "(titles such as \"... translations\", where ... is the name of the language)\n"
+                                         "Remember that the title, the example in the original language and its translation should be printed on separate lines.\n"
+                                         "For example:\n"
+                                         "\"French examples:\n"
+                                         "Well, hello, freedom fighters\n"
+                                         "Et bien, bonjour combattants de la libert?.\"")
+
+            return CheckResult.correct()
+
+
+
+
+    if __name__ == '__main__':
+        TranslatorTest('translator.translator').run_tests()
+  learner_created: false
+- name: hello.txt
+  visible: true
+  text: |-
+    Translation
+    arabic Examples:Well, hello, old-school racist.حسنا، مرحبا يا تلميذة المدرسة العنصريّة - الأمر يسري بدمهم!Translation
+    german Examples:Finally got a personalized hello from Earl.Ich habe endlich ein personifiziertes hallo von Earl bekommen.Translation
+    english Examples:Translation
+    spanish Examples:Well, hello, Miss Anchor-liar.Bien, hola, señorita presentadora de mentiras.Translation
+    french Examples:Say goodbye to anti-aliasing and hello to naturally crisp graphics.Dites adieu à l'anti-crénelage et bonjour à des graphismes naturellement nets.Translation
+    hebrew Examples:How come they never say hello?איך זה שהן אף פעם לא אומרות שלום.Translation
+    japanese Examples:The little boy said hello to me.小さな男の子が私にこんにちはと言った。Translation
+    dutch Examples:Which in Hawaiian means hello and goodbye.Dat betekent hallo en tot ziens in het Hawaiiaans.Translation
+    polish Examples:You had me at "hello".Wystarczyło mi twoje "cześć".Translation
+    portuguese Examples:That was my last kiss hello.Pois eu garanto que aquele foi o meu último beijo de olá.Translation
+    romanian Examples:I came by to say hello.Am avut o pauză de masă și am trecut să te salut.Translation
+    russian Examples:Why, hello, there, Admiral.А, Адмирал, привет, что здесь делаешь.Translation
+    turkish Examples:Say "hello" from Tito Spadola.Tito Spadola'dan, "selam" söyleyeceğim.مرحبا
+    arabic Examples:Well, hello, old-school racist.حسنا، مرحبا يا تلميذة المدرسة العنصريّة - الأمر يسري بدمهم!hallo
+    german Examples:Finally got a personalized hello from Earl.Ich habe endlich ein personifiziertes hallo von Earl bekommen.
+    english Examples:hola
+    spanish Examples:Well, hello, Miss Anchor-liar.Bien, hola, señorita presentadora de mentiras.bonjour
+    french Examples:Say goodbye to anti-aliasing and hello to naturally crisp graphics.Dites adieu à l'anti-crénelage et bonjour à des graphismes naturellement nets.שלום
+    hebrew Examples:How come they never say hello?איך זה שהן אף פעם לא אומרות שלום.こんにちは
+    japanese Examples:The little boy said hello to me.小さな男の子が私にこんにちはと言った。dag
+    dutch Examples:Which in Hawaiian means hello and goodbye.Dat betekent hallo en tot ziens in het Hawaiiaans.cześć
+    polish Examples:You had me at "hello".Wystarczyło mi twoje "cześć".olá
+    portuguese Examples:That was my last kiss hello.Pois eu garanto que aquele foi o meu último beijo de olá.salut
+    romanian Examples:I came by to say hello.Am avut o pauză de masă și am trecut să te salut.привет
+    russian Examples:Why, hello, there, Admiral.А, Адмирал, привет, что здесь делаешь.مرحبا
+    arabic Examples:Well, hello, old-school racist.حسنا، مرحبا يا تلميذة المدرسة العنصريّة - الأمر يسري بدمهم!hallo
+    german Examples:Finally got a personalized hello from Earl.Ich habe endlich ein personifiziertes hallo von Earl bekommen.
+    english Examples:hola
+    spanish Examples:Well, hello, Miss Anchor-liar.Bien, hola, señorita presentadora de mentiras.bonjour
+    french Examples:Say goodbye to anti-aliasing and hello to naturally crisp graphics.Dites adieu à l'anti-crénelage et bonjour à des graphismes naturellement nets.שלום
+    hebrew Examples:How come they never say hello?איך זה שהן אף פעם לא אומרות שלום.こんにちは
+    japanese Examples:The little boy said hello to me.小さな男の子が私にこんにちはと言った。dag
+    dutch Examples:Which in Hawaiian means hello and goodbye.Dat betekent hallo en tot ziens in het Hawaiiaans.cześć
+    polish Examples:You had me at "hello".Wystarczyło mi twoje "cześć".olá
+    portuguese Examples:That was my last kiss hello.Pois eu garanto que aquele foi o meu último beijo de olá.salut
+    romanian Examples:I came by to say hello.Am avut o pauză de masă și am trecut să te salut.привет
+    russian Examples:Why, hello, there, Admiral.А, Адмирал, привет, что здесь делаешь.selam
+    turkish Examples:Say "hello" from Tito Spadola.Tito Spadola'dan, "selam" söyleyeceğim.مرحبا
+    arabic Examples:Well, hello, old-school racist.حسنا، مرحبا يا تلميذة المدرسة العنصريّة - الأمر يسري بدمهم!hallo
+    german Examples:Finally got a personalized hello from Earl.Ich habe endlich ein personifiziertes hallo von Earl bekommen.hola
+    spanish Examples:Well, hello, Miss Anchor-liar.Bien, hola, señorita presentadora de mentiras.bonjour
+    french Examples:Say goodbye to anti-aliasing and hello to naturally crisp graphics.Dites adieu à l'anti-crénelage et bonjour à des graphismes naturellement nets.שלום
+    hebrew Examples:How come they never say hello?איך זה שהן אף פעם לא אומרות שלום.こんにちは
+    japanese Examples:The little boy said hello to me.小さな男の子が私にこんにちはと言った。dag
+    dutch Examples:Which in Hawaiian means hello and goodbye.Dat betekent hallo en tot ziens in het Hawaiiaans.cześć
+    polish Examples:You had me at "hello".Wystarczyło mi twoje "cześć".olá
+    portuguese Examples:That was my last kiss hello.Pois eu garanto que aquele foi o meu último beijo de olá.salut
+    romanian Examples:I came by to say hello.Am avut o pauză de masă și am trecut să te salut.привет
+    russian Examples:Why, hello, there, Admiral.А, Адмирал, привет, что здесь делаешь.selam
+    turkish Examples:Say "hello" from Tito Spadola.Tito Spadola'dan, "selam" söyleyeceğim.Arabic Translations:مرحبا
+    arabic Examples:Well, hello, old-school racist.حسنا، مرحبا يا تلميذة المدرسة العنصريّة - الأمر يسري بدمهم!German Translations:hallo
+    german Examples:Finally got a personalized hello from Earl.Ich habe endlich ein personifiziertes hallo von Earl bekommen.Spanish Translations:hola
+    spanish Examples:Well, hello, Miss Anchor-liar.Bien, hola, señorita presentadora de mentiras.French Translations:bonjour
+    french Examples:Say goodbye to anti-aliasing and hello to naturally crisp graphics.Dites adieu à l'anti-crénelage et bonjour à des graphismes naturellement nets.Hebrew Translations:שלום
+    hebrew Examples:How come they never say hello?איך זה שהן אף פעם לא אומרות שלום.Japanese Translations:こんにちは
+    japanese Examples:The little boy said hello to me.小さな男の子が私にこんにちはと言った。Dutch Translations:dag
+    dutch Examples:Which in Hawaiian means hello and goodbye.Dat betekent hallo en tot ziens in het Hawaiiaans.Polish Translations:cześć
+    polish Examples:You had me at "hello".Wystarczyło mi twoje "cześć".Portuguese Translations:olá
+    portuguese Examples:That was my last kiss hello.Pois eu garanto que aquele foi o meu último beijo de olá.Romanian Translations:salut
+    romanian Examples:I came by to say hello.Am avut o pauză de masă și am trecut să te salut.Russian Translations:привет
+    russian Examples:Why, hello, there, Admiral.А, Адмирал, привет, что здесь делаешь.Turkish Translations:selam
+    turkish Examples:Say "hello" from Tito Spadola.Tito Spadola'dan, "selam" söyleyeceğim.
+  learner_created: true
+- name: translator/hello.txt
+  visible: true
+  text: |-
+    Translationholabuenos d�asqu� talsaludo
+    Spanish Examples:Well, hello, Miss Anchor-liar.Bien, hola, se�orita presentadora de mentiras.I guess it's impossible to forget her. Yes, hello.Imagino que es imposible olvidarla... hola.Yes, hello, Mr Teodoresco.S�, buenos d�as, Sr. Teodoresco.Dr. Juarez, hello again.Doctora Ju�rez, hola de nuevo.And all I could say was hello.Y todo lo que supe decir fue hola.Translationbonjourall�oh�coucou
+    French Examples:Say goodbye to anti-aliasing and hello to naturally crisp graphics.Dites adieu � l'anti-cr�nelage et bonjour � des graphismes naturellement nets.Goodbye England and hello the Netherlands...Au revoir l'Angleterre et bonjour les Pays-Bas...Yes, hello. Jackson speaking.Oui, all�, Jackson � l'appareil.And... hello... she's hallucinating dwarves.Et... all�... elle hallucine de nains.And began appearing hello kitty games online.Et a commenc� � appara�tre bonjour Kitty jeux en ligne.
+  learner_created: true
+feedback_link: https://hyperskill.org/projects/99/stages/548/implement#comment
+status: Solved
+feedback:
+  message: Congratulations! Continue on <a href="https://hyperskill.org/projects/99/stages/548/implement">JetBrains
+    Academy</a>
+  time: Wed, 04 Nov 2020 15:20:28 UTC
+record: 6
